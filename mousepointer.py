@@ -9,3 +9,7 @@ try:
         print('\b' * len(positionStr), end='', flush=True)
 except KeyboardInterrupt:
     print('\n')
+
+# pyautogui.sleep(5)
+# pyautogui.press("f12"),
+# print('Finished........')

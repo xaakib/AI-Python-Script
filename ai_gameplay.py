@@ -2,7 +2,6 @@ import pyautogui, time
 import random
 
 
-
 while True:
     print('started function')
     pyautogui.sleep(4)
@@ -18,7 +17,7 @@ while True:
 
     pyautogui.hotkey("ctrl","1"),
     print('timer started.......')
-    timecalculat = random.randint(10* 60,13* 60)
+    timecalculat = random.randint(16* 60,26* 60)
     print(timecalculat)
     pyautogui.sleep(timecalculat)
     pyautogui.hotkey("ctrl","1"),
@@ -28,7 +27,7 @@ while True:
     pyautogui.click(x=1818, y=783)
     pyautogui.sleep(120)
 #dismiss.....
-    pyautogui.click(x=605, y=805)
+    pyautogui.click(x=612, y=801)
 #analysis
     pyautogui.sleep(30)
     pyautogui.click(x=244, y=436)
