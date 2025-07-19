@@ -19,7 +19,7 @@ def run_automation():
     pyautogui.hotkey("ctrl","1") # Assuming this is F8, adjust if needed
     print('Sent F8!')
     print('timer started.......')
-    timecalculat = random.randint(10 * 60, 12 * 60)
+    timecalculat = random.randint(10 * 60, 13 * 60)
     print(f"Next stop in: {timecalculat} seconds")
     pyautogui.sleep(timecalculat)
     pyautogui.hotkey("ctrl","1") # Assuming this is F8, adjust if needed
@@ -48,10 +48,10 @@ def run_automation():
     # Started stream again
 
 def main():
-    start_hour = 1  # 1 AM
-    start_minute = 16 # 15 minutes past 1 AM
-    end_hour = 9    # 9 AM
-    end_minute = 23 # 23 minutes past 9 AM
+    start_hour = 0  # 0 -12 AM
+    start_minute = 20 # 15 minutes past 1 AM
+    end_hour = 8    # 8 AM
+    end_minute = 10 # 10 minutes past 9 AM
     
     print("Automation script waiting for active hours...")
     
