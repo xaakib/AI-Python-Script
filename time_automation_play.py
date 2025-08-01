@@ -16,13 +16,13 @@ def run_automation():
     pyautogui.hotkey("alt", "tab")
     
     # Streaming and automation started.......
-    pyautogui.hotkey("ctrl","1") # Assuming this is F8, adjust if needed
+    # pyautogui.hotkey("ctrl","1") # Assuming this is F8, adjust if needed
     print('Sent F8!')
     print('timer started.......')
-    timecalculat = random.randint(10 * 60, 13 * 60)
+    timecalculat = random.randint(18 * 60, 22 * 60)
     print(f"Next stop in: {timecalculat} seconds")
     pyautogui.sleep(timecalculat)
-    pyautogui.hotkey("ctrl","1") # Assuming this is F8, adjust if needed
+    # pyautogui.hotkey("ctrl","1") # Assuming this is F8, adjust if needed
     print('stopped car....')
 
     # Browser ending stream
@@ -31,10 +31,10 @@ def run_automation():
     pyautogui.sleep(120) # 2 minutes wait
     
     # Dismiss
-    pyautogui.click(x=559, y=821) # Ensure these coordinates are correct for your setup
+    pyautogui.click(x=559, y=840) # Ensure these coordinates are correct for your setup
     # Analysis
     pyautogui.sleep(30)
-    pyautogui.click(x=244, y=405) # Ensure these coordinates are correct for your setup
+    pyautogui.click(x=245, y=445) # Ensure these coordinates are correct for your setup
     t = random.randint(1 * 60, 1 * 60) # This will always be 60 seconds
     print('continue time........')
     print(f"Continue for: {t} seconds")
@@ -48,51 +48,61 @@ def run_automation():
     # Started stream again
 
 def main():
-    start_hour = 0  # 0 -12 AM
-    start_minute = 20 # 15 minutes past 1 AM
-    end_hour = 8    # 8 AM
-    end_minute = 10 # 10 minutes past 9 AM
+    # Define your active time slots
+    # Each tuple represents (start_hour, start_minute, end_hour, end_minute)
+    active_time_slots = [
+        (0, 10, 3, 10),      # First slot: 12:10 AM to 3:10 AM
+        (5, 20, 23, 15)      # Second slot: 6:20 AM to 10:15 PM (এখানে 23:15 মানে 11:15 PM)
+    ]
     
+    # Live count variable add করা হয়েছে
+    live_count = 0
+
     print("Automation script waiting for active hours...")
     
     while True:
-        now = datetime.datetime.now() # Get full datetime object to check hour and minute
+        now = datetime.datetime.now()
+        is_active_hour = False
         
-        # Define the start and end datetime objects for today
-        today_start_time = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
-        today_end_time = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
+        for start_hour, start_minute, end_hour, end_minute in active_time_slots:
+            today_start_time = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+            today_end_time = now.replace(hour=end_hour, minute=end_minute, second=0, microsecond=0)
 
-        # If the end time has already passed for today, consider the end time to be tomorrow
-        # This handles cases like 1 AM to 9 AM, where 1 AM is on one day and 9 AM could be on the next.
-        # Given 1:15 AM to 9:23 AM is within the same day, this specific check isn't strictly needed for this range,
-        # but it's good practice for ranges that cross midnight.
-        if today_end_time < today_start_time: # This condition would be true if end_hour < start_hour
-             today_end_time += datetime.timedelta(days=1)
-        
-        # Check if current time is within the active window (1:15 AM to 9:23 AM)
-        if today_start_time <= now < today_end_time:
-            print(f"Current time: {now.strftime('%H:%M:%S')} - Running automation.")
-            try:
-                run_automation()
-            except pyautogui.FailSafeException:
-                print("PyAutoGUI FailSafe triggered. Mouse moved to a corner. Exiting.")
+            if today_end_time < today_start_time:
+                today_end_time += datetime.timedelta(days=1)
+            
+            if today_start_time <= now < today_end_time:
+                is_active_hour = True
+                print(f"Current time: {now.strftime('%H:%M:%S')} - Running automation within {start_hour:02}:{start_minute:02} to {end_hour:02}:{end_minute:02}.")
+                try:
+                    run_automation()
+                    # Automation successfully run করার পর count বাড়াচ্ছি
+                    live_count += 1
+                    print(f"Total successful live runs: {live_count}")
+                except pyautogui.FailSafeException:
+                    print("PyAutoGUI FailSafe triggered. Mouse moved to a corner. Exiting.")
+                    return
+                except Exception as e:
+                    print(f"An error occurred: {e}. Continuing after a short delay.")
+                    time.sleep(60)
                 break
-            except Exception as e:
-                print(f"An error occurred: {e}. Continuing after a short delay.")
-                time.sleep(60) # Wait a minute before retrying
-        else:
-            print(f"Current time: {now.strftime('%H:%M:%S')} - Not within active hours ({start_hour}:{start_minute} to {end_hour}:{end_minute}). Waiting...")
+        
+        if not is_active_hour:
+            print(f"Current time: {now.strftime('%H:%M:%S')} - Not within any active hours. Waiting...")
             
-            # Calculate when the next active period starts
-            next_run_time = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+            next_run_time = None
+            for start_hour, start_minute, _, _ in active_time_slots:
+                potential_next_run = now.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+                if potential_next_run <= now:
+                    potential_next_run += datetime.timedelta(days=1)
+                
+                if next_run_time is None or potential_next_run < next_run_time:
+                    next_run_time = potential_next_run
             
-            # If the next run time for today has already passed, set it for tomorrow
-            if next_run_time <= now:
-                next_run_time += datetime.timedelta(days=1)
-            
-            wait_seconds = (next_run_time - now).total_seconds()
-            print(f"Waiting for {wait_seconds:.0f} seconds until {next_run_time.strftime('%H:%M:%S')}")
-            time.sleep(wait_seconds + 5) # Add a small buffer to ensure we're past the exact minute
+            if next_run_time:
+                wait_seconds = (next_run_time - now).total_seconds()
+                print(f"Waiting for {wait_seconds:.0f} seconds until {next_run_time.strftime('%H:%M:%S')}")
+                time.sleep(wait_seconds + 5)
 
 if __name__ == "__main__":
     main()
