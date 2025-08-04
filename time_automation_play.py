@@ -1,63 +1,17 @@
 import pyautogui, time
 import random
 import datetime
-
-def run_automation():
-    """
-    # This function contains your original automation logic.
-    # It will be called repeatedly during the active hours.
-    """
-    
-    print('#started streaming............')
-    pyautogui.sleep(4)
-    
-    print('#4 sec waited function')
-    pyautogui.click(x=1818, y=850) # Ensure these coordinates are correct for your setup
-    pyautogui.sleep(2)
-    
-    # Streaming and automation started.......
-    # pyautogui.hotkey("ctrl","1")
-    print('#timer started.......')
-    timecalculat = random.randint(18 * 60, 22 * 60)
-    minutes = timecalculat // 60
-    seconds = timecalculat % 60
-    print(f"#Next stop in: {minutes} minutes {seconds} seconds")
-    pyautogui.sleep(timecalculat)
-    # pyautogui.hotkey("ctrl","1") # Assuming this is F8, adjust if needed
-    print('#stopped car....')
-
-    # Browser ending stream
-    pyautogui.click(x=1818, y=850) # Ensure these coordinates are correct for your setup
-    print('#Stopped streaming............')
-    pyautogui.sleep(120) # 2 minutes wait
-    
-    # Dismiss
-    pyautogui.click(x=559, y=840) # Ensure these coordinates are correct for your setup
-    # Analysis
-    pyautogui.sleep(30)
-    pyautogui.click(x=245, y=445) # Ensure these coordinates are correct for your setup
-    t = random.randint(1 * 60, 1 * 60) # This will always be 60 seconds
-    print('#continue time........')
-    print(f"#Continue for: {t} seconds")
-    pyautogui.sleep(t)
-
-    # Switch application
-    pyautogui.sleep(5)
-    pyautogui.click(x=1619, y=247) # Ensure these coordinates are correct for your setup
-    pyautogui.sleep(5)
-    pyautogui.click(x=1635, y=601) # Ensure these coordinates are correct for your setup
-    # Started stream again
+from PIL import ImageChops, Image
+import pygetwindow as gw
 
 def main():
-    # Define your active time slots
     active_time_slots = [
-        (0, 10, 3, 10),      # First slot: 12:10 AM to 3:10 AM
-        (5, 20, 23, 15)      # Second slot: 6:20 AM to 11:15 PM
+        (0, 10, 4, 10),
+        (6, 10, 23, 15)
     ]
     
     live_count = 0
-    first_live_started = False # নতুন ভেরিয়েবল: এটি নিশ্চিত করবে যে প্রথমবার লাইভ শুরু হয়েছে কিনা
-
+    
     print("#Automation script waiting for active hours...")
     
     while True:
@@ -75,27 +29,85 @@ def main():
                 is_active_hour = True
                 print(f"#Current time: {now.strftime('%H:%M:%S')} - Running automation within {start_hour:02}:{start_minute:02} to {end_hour:02}:{end_minute:02}.")
 
-                # =========================================================================
-                # এই অংশটি শুধুমাত্র একবারই চলবে, যখন প্রথমবার লাইভ শুরু হবে
-                print('এই অংশটি শুধুমাত্র একবারই চলবে, যখন প্রথমবার লাইভ শুরু হবে')
-                if not first_live_started:
-                    pyautogui.sleep(10)
-                    print('#Waiting for 10 seconds before starting the live stream...')
-                    pyautogui.click(x=1818, y=221)
-                    print('#Clicked autoclicker.')
-                    pyautogui.sleep(10)
-                    pyautogui.click(x=818, y=207) # উদাহরণস্বরূপ কোঅর্ডিনেট, আপনার প্রয়োজন অনুযায়ী পরিবর্তন করুন
-                    print('#Clicked to start the live stream.')
-                    pyautogui.sleep(15)
-                    print('#15 seconds waited, starting the automation loop.')
-                    first_live_started = True # একবার রান হয়ে গেলে এটিকে True করে দেওয়া হলো
-                    print('#First live started, automation will continue now.')
-                # =========================================================================
-                
                 try:
-                    run_automation()
+                    # এমুলেটর উইন্ডোর অবস্থান খুঁজে বের করুন
+                    try:
+                        emulator_window = gw.getWindowsWithTitle('BlueStacks App Player')[0]
+                        current_region = (emulator_window.left, emulator_window.top, emulator_window.width, emulator_window.height)
+                    except IndexError:
+                        print("Emulator window not found. Please ensure it's open.")
+                        time.sleep(60)
+                        continue
+
+                    # লাইভ স্ট্রিমিং শুরু করার ক্লিক
+                    # pyautogui.sleep(10)
+                    # print('#Waiting for 10 seconds before starting the live stream...')
+                    # pyautogui.click(x=1818, y=221)
+                    # print('#Clicked autoclicker.')
+                    # pyautogui.sleep(10)
+                    # pyautogui.click(x=818, y=207)
+                    # print('#Clicked to start the live stream.')
+                    # pyautogui.sleep(15)
+                    # print('#15 seconds waited, starting the automation loop.')
+                    # print('#started streaming............')
+                    # pyautogui.sleep(4)
+                    # pyautogui.click(x=1818, y=850)
+                    # pyautogui.sleep(2)
+                    print('#timer started.......')
+                    
+                    timecalculat = random.randint(12 * 60, 16 * 60)
+                    minutes = timecalculat // 60
+                    seconds = timecalculat % 60
+                    print(f"#Next stop in: {minutes} minutes {seconds} seconds")
+
+                    start_time = time.time()
+                    while time.time() - start_time < timecalculat:
+                        # প্রতি ৩০ সেকেন্ড পর পর হ্যাং চেক করুন
+                        time_to_wait = 30
+                        if time.time() - start_time + time_to_wait > timecalculat:
+                            time_to_wait = timecalculat - (time.time() - start_time)
+                        
+                        # শুধুমাত্র যখন সময় বাকি থাকে তখনই অপেক্ষা করুন
+                        if time_to_wait > 0:
+                            pyautogui.sleep(time_to_wait)
+                        
+                        last_screenshot = pyautogui.screenshot(region=current_region).convert('RGB')
+                        new_screenshot = pyautogui.screenshot(region=current_region).convert('RGB').resize(last_screenshot.size)
+                        
+                        diff = ImageChops.difference(last_screenshot, new_screenshot).getbbox()
+                        
+                        if diff is None:
+                            print('Game has likely hung. Stopping live stream.')
+                            break # হ্যাং হলে লুপ থেকে বের হয়ে যাবে
+
+                    # লাইভ স্ট্রিম বন্ধ করার কোড
+                    pyautogui.click(x=1818, y=850)
+                    print('#Stopped streaming............')
+                    
+                    # গেম হ্যাং হয়েছিল কিনা তা চেক করুন
+                    if diff is None:
+                        # যদি হ্যাং হয়ে থাকে, শুধু লাইভ বন্ধ করে আবার শুরু করার জন্য অপেক্ষা করবে।
+                        pyautogui.sleep(120)
+                        continue
+
+                    # যদি হ্যাং না হয়, তবে বাকি অটোমেশন চলবে
+                    print('#stopped car....')
+                    pyautogui.sleep(120) # 2 minutes wait
+                    pyautogui.click(x=559, y=840)
+                    pyautogui.sleep(30)
+                    pyautogui.click(x=245, y=445)
+                    t = random.randint(1 * 60, 1 * 60)
+                    print('#continue time........')
+                    print(f"#Continue for: {t} seconds")
+                    pyautogui.sleep(t)
+                    pyautogui.sleep(5)
+                    pyautogui.click(x=1619, y=247)
+                    pyautogui.sleep(5)
+                    pyautogui.click(x=1635, y=601)
+                    
                     live_count += 1
                     print(f"#Total successful live runs: {live_count}")
+
                 except pyautogui.FailSafeException:
                     print("#PyAutoGUI FailSafe triggered. Mouse moved to a corner. Exiting.")
                     return
@@ -113,7 +125,7 @@ def main():
                 if potential_next_run <= now:
                     potential_next_run += datetime.timedelta(days=1)
                 
-                if next_run_time is None or potential_next_run < next_run_time:
+                if next_run_time is None or potential_next_run < potential_next_run:
                     next_run_time = potential_next_run
             
             if next_run_time:
