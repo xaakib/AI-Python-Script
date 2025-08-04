@@ -7,12 +7,10 @@ import pygetwindow as gw
 def main():
     active_time_slots = [
         (0, 10, 4, 10),
-        (6, 10, 23, 15)
+        (6, 10, 23, 58)
     ]
     
     live_count = 0
-    hang_count = 0 
-    HANG_LIMIT = 3 # ৩ বার হ্যাং হলে স্ক্রিপ্ট বন্ধ হয়ে যাবে
 
     print("#Automation script waiting for active hours...")
     
@@ -40,76 +38,84 @@ def main():
                         time.sleep(60)
                         continue
 
-                    # লাইভ স্ট্রিমিং শুরু করার ধাপ
                     pyautogui.sleep(10)
                     print('#Waiting for 10 seconds before starting the live stream...')
-                    pyautogui.click(x=1818, y=221) # autoclicker button-এ ক্লিক
-                    print('#Clicked autoclicker.')
-                    pyautogui.sleep(10)
-                    pyautogui.click(x=818, y=207)  # লাইভ স্ট্রিমিং শুরু করার button-এ ক্লিক
-                    print('#Clicked to start the live stream.')
-                    pyautogui.sleep(15)
-                    print('#15 seconds waited, starting the automation loop.')
-                    print('#started streaming............')
-                    pyautogui.sleep(4)
-                    pyautogui.click(x=1818, y=850) # car button-এ ক্লিক
+                    # pyautogui.click(x=1818, y=221)
+                    # print('#Clicked autoclicker.')
+                    # pyautogui.sleep(10)
+                    # pyautogui.click(x=818, y=207)
+                    # print('#Clicked to start the live stream.')
+                    # pyautogui.sleep(15)
+                    # print('#15 seconds waited, starting the automation loop.')
+                    # print('#started streaming............')
+                    # pyautogui.sleep(4)
+                    pyautogui.click(x=1818, y=850)
                     pyautogui.sleep(2)
+                    print('#started streaming............')
                     
-                    timecalculat = random.randint(18 * 60, 22 * 60)
+                    timecalculat = random.randint(5 * 60, 8 * 60)
                     minutes = timecalculat // 60
                     seconds = timecalculat % 60
                     print(f"#Next stop in: {minutes} minutes {seconds} seconds")
 
+
+                    
+
                     is_hung = False
                     start_time = time.time()
+                    last_three_screenshots = []  # শেষ তিনটি স্ক্রিনশট সংরক্ষণের জন্য
+                    check_interval = 30  # প্রতি 30 সেকেন্ডে একবার চেক করা হবে
+
                     while time.time() - start_time < timecalculat:
-                        time_to_wait = 30
+                        time_to_wait = check_interval
                         if time.time() - start_time + time_to_wait > timecalculat:
                             time_to_wait = timecalculat - (time.time() - start_time)
                         
                         if time_to_wait > 0:
                             pyautogui.sleep(time_to_wait)
                         
-                        print("Checking for hang... [30-second check]")
-                        last_screenshot = pyautogui.screenshot(region=current_region).convert('RGB')
-                        new_screenshot = pyautogui.screenshot(region=current_region).convert('RGB').resize(last_screenshot.size)
+                        print("Checking for hang... [Every 30-second check]")
+                        new_screenshot = pyautogui.screenshot(region=current_region).convert('RGB')
                         
-                        diff = ImageChops.difference(last_screenshot, new_screenshot).getbbox()
-                        
-                        if diff is None:
-                            print('Game has likely hung. Stopping live stream.')
-                            is_hung = True
-                            break
-                        else:
-                            print("Game is running, continuing stream...")
+                        last_three_screenshots.append(new_screenshot)
+                        if len(last_three_screenshots) > 3:
+                            last_three_screenshots.pop(0)  # চতুর্থ স্ক্রিনশট যোগ হলে, প্রথমটি মুছে ফেলা হবে
+                            
+                        if len(last_three_screenshots) == 3:
+                            diff1 = ImageChops.difference(last_three_screenshots[0], last_three_screenshots[1]).getbbox()
+                            diff2 = ImageChops.difference(last_three_screenshots[1], last_three_screenshots[2]).getbbox()
+                            
+                            if diff1 is None and diff2 is None:
+                                print('Game has likely hung (3 consecutive static screenshots). Stopping live stream.')
+                                is_hung = True
+                                break
+                            else:
+                                print("Game is running, continuing stream...")
 
-                    # সম্পূর্ণ অটোমেশন লজিক
-                    pyautogui.click(x=1818, y=850) # streaming বন্ধ করার জন্য car button-এ ক্লিক
+
+
+
+
+                    pyautogui.click(x=1818, y=850)
                     print('#Stopped streaming............')
                     
                     if is_hung:
-                        hang_count += 1
-                        print(f"Hang detected. Current hang count: {hang_count}/{HANG_LIMIT}")
-                        if hang_count >= HANG_LIMIT:
-                            print(f"#Maximum hang limit ({HANG_LIMIT}) reached. Exiting script.")
-                            return
-                        pyautogui.sleep(120)
-                        continue
+                        # একবার হ্যাং হলে স্ক্রিপ্ট পুরোপুরি বন্ধ হয়ে যাবে
+                        print("#Hang detected. Exiting script.")
+                        return 
 
-                    # হ্যাং না হলে hang_count reset করা হবে
-                    hang_count = 0 
                     print('#stopped car....')
                     pyautogui.sleep(120)
-                    pyautogui.click(x=559, y=840) # Dismiss button-এ ক্লিক
+                    pyautogui.click(x=559, y=840)
                     pyautogui.sleep(30)
-                    pyautogui.click(x=245, y=445) # Analysis button-এ ক্লিক
+                    pyautogui.click(x=245, y=445)
                     t = random.randint(1 * 60, 1 * 60)
                     print('#continue time........')
                     print(f"#Continue for: {t} seconds")
                     pyautogui.sleep(t)
-                    pyautogui.click(x=1619, y=247) # app switcher-এ ক্লিক
+                    pyautogui.click(x=1619, y=247)
                     pyautogui.sleep(5)
-                    pyautogui.click(x=1635, y=601) # app-এর icon-এ ক্লিক
+                    pyautogui.click(x=1635, y=601)
                     
                     live_count += 1
                     print(f"#Total successful live runs: {live_count}")
