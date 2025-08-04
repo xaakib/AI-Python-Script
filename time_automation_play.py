@@ -11,7 +11,7 @@ def main():
     ]
     
     live_count = 0
-    
+
     print("#Automation script waiting for active hours...")
     
     while True:
@@ -30,7 +30,6 @@ def main():
                 print(f"#Current time: {now.strftime('%H:%M:%S')} - Running automation within {start_hour:02}:{start_minute:02} to {end_hour:02}:{end_minute:02}.")
 
                 try:
-                    # এমুলেটর উইন্ডোর অবস্থান খুঁজে বের করুন
                     try:
                         emulator_window = gw.getWindowsWithTitle('BlueStacks App Player')[0]
                         current_region = (emulator_window.left, emulator_window.top, emulator_window.width, emulator_window.height)
@@ -39,9 +38,8 @@ def main():
                         time.sleep(60)
                         continue
 
-                    # লাইভ স্ট্রিমিং শুরু করার ক্লিক
-                    # pyautogui.sleep(10)
-                    # print('#Waiting for 10 seconds before starting the live stream...')
+                    pyautogui.sleep(10)
+                    print('#Waiting for 10 seconds before starting the live stream...')
                     # pyautogui.click(x=1818, y=221)
                     # print('#Clicked autoclicker.')
                     # pyautogui.sleep(10)
@@ -51,26 +49,26 @@ def main():
                     # print('#15 seconds waited, starting the automation loop.')
                     # print('#started streaming............')
                     # pyautogui.sleep(4)
-                    # pyautogui.click(x=1818, y=850)
-                    # pyautogui.sleep(2)
-                    print('#timer started.......')
+                    pyautogui.click(x=1818, y=850)
+                    pyautogui.sleep(2)
+                    print('#started streaming............')
                     
-                    timecalculat = random.randint(12 * 60, 16 * 60)
+                    timecalculat = random.randint(18 * 60, 22 * 60)
                     minutes = timecalculat // 60
                     seconds = timecalculat % 60
                     print(f"#Next stop in: {minutes} minutes {seconds} seconds")
 
+                    is_hung = False
                     start_time = time.time()
                     while time.time() - start_time < timecalculat:
-                        # প্রতি ৩০ সেকেন্ড পর পর হ্যাং চেক করুন
                         time_to_wait = 30
                         if time.time() - start_time + time_to_wait > timecalculat:
                             time_to_wait = timecalculat - (time.time() - start_time)
                         
-                        # শুধুমাত্র যখন সময় বাকি থাকে তখনই অপেক্ষা করুন
                         if time_to_wait > 0:
                             pyautogui.sleep(time_to_wait)
                         
+                        print("Checking for hang... [30-second check]")
                         last_screenshot = pyautogui.screenshot(region=current_region).convert('RGB')
                         new_screenshot = pyautogui.screenshot(region=current_region).convert('RGB').resize(last_screenshot.size)
                         
@@ -78,21 +76,21 @@ def main():
                         
                         if diff is None:
                             print('Game has likely hung. Stopping live stream.')
-                            break # হ্যাং হলে লুপ থেকে বের হয়ে যাবে
+                            is_hung = True
+                            break
+                        else:
+                            print("Game is running, continuing stream...")
 
-                    # লাইভ স্ট্রিম বন্ধ করার কোড
                     pyautogui.click(x=1818, y=850)
                     print('#Stopped streaming............')
                     
-                    # গেম হ্যাং হয়েছিল কিনা তা চেক করুন
-                    if diff is None:
-                        # যদি হ্যাং হয়ে থাকে, শুধু লাইভ বন্ধ করে আবার শুরু করার জন্য অপেক্ষা করবে।
-                        pyautogui.sleep(120)
-                        continue
+                    if is_hung:
+                        # একবার হ্যাং হলে স্ক্রিপ্ট পুরোপুরি বন্ধ হয়ে যাবে
+                        print("#Hang detected. Exiting script.")
+                        return 
 
-                    # যদি হ্যাং না হয়, তবে বাকি অটোমেশন চলবে
                     print('#stopped car....')
-                    pyautogui.sleep(120) # 2 minutes wait
+                    pyautogui.sleep(120)
                     pyautogui.click(x=559, y=840)
                     pyautogui.sleep(30)
                     pyautogui.click(x=245, y=445)
@@ -100,7 +98,6 @@ def main():
                     print('#continue time........')
                     print(f"#Continue for: {t} seconds")
                     pyautogui.sleep(t)
-                    pyautogui.sleep(5)
                     pyautogui.click(x=1619, y=247)
                     pyautogui.sleep(5)
                     pyautogui.click(x=1635, y=601)
@@ -125,7 +122,7 @@ def main():
                 if potential_next_run <= now:
                     potential_next_run += datetime.timedelta(days=1)
                 
-                if next_run_time is None or potential_next_run < potential_next_run:
+                if next_run_time is None or potential_next_run < next_run_time:
                     next_run_time = potential_next_run
             
             if next_run_time:
