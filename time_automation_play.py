@@ -11,6 +11,8 @@ def main():
     ]
     
     live_count = 0
+    hang_count = 0 # নতুন ভেরিয়েবল: হ্যাং কাউন্ট করার জন্য
+    HANG_LIMIT = 3 # ৩ বার হ্যাং হলে স্ক্রিপ্ট বন্ধ হয়ে যাবে
 
     print("#Automation script waiting for active hours...")
     
@@ -38,20 +40,20 @@ def main():
                         time.sleep(60)
                         continue
 
+                    # লাইভ স্ট্রিমিং শুরু করার ক্লিকগুলো
                     pyautogui.sleep(10)
                     print('#Waiting for 10 seconds before starting the live stream...')
-                    # pyautogui.click(x=1818, y=221)
-                    # print('#Clicked autoclicker.')
-                    # pyautogui.sleep(10)
-                    # pyautogui.click(x=818, y=207)
-                    # print('#Clicked to start the live stream.')
-                    # pyautogui.sleep(15)
-                    # print('#15 seconds waited, starting the automation loop.')
-                    # print('#started streaming............')
-                    # pyautogui.sleep(4)
+                    pyautogui.click(x=1818, y=221)
+                    print('#Clicked autoclicker.')
+                    pyautogui.sleep(10)
+                    pyautogui.click(x=818, y=207)
+                    print('#Clicked to start the live stream.')
+                    pyautogui.sleep(15)
+                    print('#15 seconds waited, starting the automation loop.')
+                    print('#started streaming............')
+                    pyautogui.sleep(4)
                     pyautogui.click(x=1818, y=850)
                     pyautogui.sleep(2)
-                    print('#started streaming............')
                     
                     timecalculat = random.randint(18 * 60, 22 * 60)
                     minutes = timecalculat // 60
@@ -85,10 +87,16 @@ def main():
                     print('#Stopped streaming............')
                     
                     if is_hung:
-                        # একবার হ্যাং হলে স্ক্রিপ্ট পুরোপুরি বন্ধ হয়ে যাবে
-                        print("#Hang detected. Exiting script.")
-                        return 
+                        hang_count += 1
+                        print(f"Hang detected. Current hang count: {hang_count}/{HANG_LIMIT}")
+                        if hang_count >= HANG_LIMIT:
+                            print(f"#Maximum hang limit ({HANG_LIMIT}) reached. Exiting script.")
+                            return # স্ক্রিপ্ট সম্পূর্ণরূপে বন্ধ হয়ে যাবে
+                        pyautogui.sleep(120)
+                        continue
 
+                    # হ্যাং না হলে hang_count reset করা হবে
+                    hang_count = 0 
                     print('#stopped car....')
                     pyautogui.sleep(120)
                     pyautogui.click(x=559, y=840)
