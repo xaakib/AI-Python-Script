@@ -6,8 +6,8 @@ import pygetwindow as gw
 
 def main():
     active_time_slots = [
-        (0, 10, 4, 10),
-        (6, 10, 23, 58)
+        (8, 10, 23, 15),
+        (0, 20, 9, 10)
     ]
     
     live_count = 0
@@ -52,8 +52,10 @@ def main():
                     pyautogui.click(x=1818, y=850)
                     pyautogui.sleep(2)
                     print('#started streaming............')
+                    pyautogui.hotkey("ctrl","1")
+
                     
-                    timecalculat = random.randint(5 * 60, 8 * 60)
+                    timecalculat = random.randint(22 * 60, 32 * 60)
                     minutes = timecalculat // 60
                     seconds = timecalculat % 60
                     print(f"#Next stop in: {minutes} minutes {seconds} seconds")
@@ -87,6 +89,9 @@ def main():
                             
                             if diff1 is None and diff2 is None:
                                 print('Game has likely hung (3 consecutive static screenshots). Stopping live stream.')
+                                
+                                pyautogui.click(x=1819, y=254) # stop automatically game
+                                # call anyone direct sim 
                                 is_hung = True
                                 break
                             else:
@@ -95,7 +100,7 @@ def main():
 
 
 
-
+                    pyautogui.hotkey("ctrl","1")
                     pyautogui.click(x=1818, y=850)
                     print('#Stopped streaming............')
                     
@@ -105,6 +110,7 @@ def main():
                         return 
 
                     print('#stopped car....')
+                    last_three_screenshots.clear()  # স্ক্রিনশট ক্লিয়ার করা হচ্ছে পরবর্তী চেকের জন্য
                     pyautogui.sleep(120)
                     pyautogui.click(x=559, y=840)
                     pyautogui.sleep(30)
@@ -113,9 +119,7 @@ def main():
                     print('#continue time........')
                     print(f"#Continue for: {t} seconds")
                     pyautogui.sleep(t)
-                    pyautogui.click(x=1619, y=247)
-                    pyautogui.sleep(5)
-                    pyautogui.click(x=1635, y=601)
+                   
                     
                     live_count += 1
                     print(f"#Total successful live runs: {live_count}")
