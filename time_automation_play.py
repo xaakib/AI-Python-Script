@@ -55,7 +55,7 @@ def main():
                     pyautogui.hotkey("ctrl","1")
 
                     
-                    timecalculat = random.randint(22 * 60, 32 * 60)
+                    timecalculat = random.randint(16 * 60, 22 * 60)
                     minutes = timecalculat // 60
                     seconds = timecalculat % 60
                     print(f"#Next stop in: {minutes} minutes {seconds} seconds")
@@ -90,10 +90,10 @@ def main():
                             if diff1 is None and diff2 is None:
                                 print('Game has likely hung (3 consecutive static screenshots). Stopping live stream.')
                                 
-                                pyautogui.click(x=1819, y=254) # stop automatically game
-                                # call anyone direct sim 
-                                is_hung = True
-                                break
+                                pyautogui.click(x=1047, y=872) # stop automatically game
+                                # # call anyone direct sim 
+                                # is_hung = True
+                                # break
                             else:
                                 print("Game is running, continuing stream...")
 
@@ -112,9 +112,9 @@ def main():
                     print('#stopped car....')
                     last_three_screenshots.clear()  # স্ক্রিনশট ক্লিয়ার করা হচ্ছে পরবর্তী চেকের জন্য
                     pyautogui.sleep(120)
-                    pyautogui.click(x=559, y=840)
+                    pyautogui.click(x=566, y=866)
                     pyautogui.sleep(30)
-                    pyautogui.click(x=245, y=445)
+                    pyautogui.click(x=240, y=445)
                     t = random.randint(1 * 60, 1 * 60)
                     print('#continue time........')
                     print(f"#Continue for: {t} seconds")

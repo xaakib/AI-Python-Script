@@ -1,4 +1,4 @@
-import pyautogui, time
+import pyautogui
 import random
 import datetime
 
@@ -12,7 +12,7 @@ def run_automation():
     pyautogui.sleep(4)
     
     print('#4 sec waited function')
-    pyautogui.click(x=1818, y=850) # Ensure these coordinates are correct for your setup
+    pyautogui.click(x=1250, y=534) # Ensure these coordinates are correct for your setup
     pyautogui.sleep(2)
     
     # Streaming and automation started.......
@@ -27,12 +27,22 @@ def run_automation():
     print('#stopped car....')
 
     # Browser ending stream
-    pyautogui.click(x=1818, y=850) # Ensure these coordinates are correct for your setup
+    pyautogui.click(x=1250, y=534)  # Ensure these coordinates are correct for your setup
     print('#Stopped streaming............')
-    pyautogui.sleep(100)
-    pyautogui.click(x=566, y=866)
+    pyautogui.sleep(120) # 2 minutes wait
+    print('started chrome clikc function')
+    pyautogui.click(x=388, y=12) 
+    print('started dismiss function')
+    pyautogui.sleep(10) 
+
+    
+    # Dismiss
+    pyautogui.click(x=490, y=717) # Ensure these coordinates are correct for your setup
+    # Analysis
     pyautogui.sleep(30)
-    pyautogui.click(x=240, y=445)          
+    pyautogui.click(x=242, y=463) 
+    pyautogui.sleep(30)
+    pyautogui.click(x=1235, y=335)
     # Switch application
     pyautogui.sleep(5)
     # Started stream again
@@ -41,11 +51,11 @@ def main():
     # Define your active time slots
     active_time_slots = [
         (0, 10, 8, 10),      # First slot: 12:10 AM to 3:10 AM
-        (8, 20, 23, 15)      # Second slot: 6:20 AM to 11:15 PM
+        (8, 15, 23, 58)      # Second slot: 6:20 AM to 11:15 PM
     ]
     
     live_count = 0
-    first_live_started = False # নতুন ভেরিয়েবল: এটি নিশ্চিত করবে যে প্রথমবার লাইভ শুরু হয়েছে কিনা
+    # নতুন ভেরিয়েবল: এটি নিশ্চিত করবে যে প্রথমবার লাইভ শুরু হয়েছে কিনা
 
     print("#Automation script waiting for active hours...")
     
@@ -81,17 +91,8 @@ def main():
                 #     print('#First live started, automation will continue now.')
                 # =========================================================================
                 
-                try:
-                    run_automation()
-                    live_count += 1
-                    print(f"#Total successful live runs: {live_count}")
-                except pyautogui.FailSafeException:
-                    print("#PyAutoGUI FailSafe triggered. Mouse moved to a corner. Exiting.")
-                    return
-                except Exception as e:
-                    print(f"#An error occurred: {e}. Continuing after a short delay.")
-                    time.sleep(60)
-                break
+                run_automation()
+                  
         
         if not is_active_hour:
             print(f"#Current time: {now.strftime('%H:%M:%S')} - Not within any active hours. Waiting...")
